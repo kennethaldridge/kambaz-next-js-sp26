@@ -2,10 +2,10 @@ import { ReactNode } from "react";
 import CourseNavigation from "./navigation";
 export default async function CoursesLayout(
   { children, params }: Readonly<{ children: ReactNode; params: Promise<{ id: string }> }>) {
- const { cid } = await params;
+ //const { cid } = await params;
  return (
    <div id="wd-courses">
-     <h2>Courses {cid}</h2>
+     <h2>Courses 1234</h2>
      <hr />
      <table>
        <tbody>
