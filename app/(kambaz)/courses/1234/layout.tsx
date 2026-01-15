@@ -1,11 +1,14 @@
 import { ReactNode } from "react";
 import CourseNavigation from "./navigation";
-export default async function CoursesLayout(
-  { children, params }: Readonly<{ children: ReactNode; params: Promise<{ id: string }> }>) {
- const { cid } = await params;
+
+
+//export default async function CoursesLayout(
+  //{ children, params }: Readonly<{ children: ReactNode; params: Promise<{ id: string }> }>) {
+ //const { cid } = await params;
+ export default function CoursesLayout({ children }: { children: ReactNode }){
  return (
    <div id="wd-courses">
-     <h2>Courses {cid}</h2>
+     <h2>Courses {/*{cid}*/}</h2>
      <hr />
      <table>
        <tbody>
