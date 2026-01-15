@@ -17,5 +17,8 @@ export default function labs() {
            Lab 3: JavaScript Fundamentals </Link>
        </li>
      </ul>
+     <div>
+      <h2>Kenneth Aldridge</h2>
+     </div>
    </div>
 );}
