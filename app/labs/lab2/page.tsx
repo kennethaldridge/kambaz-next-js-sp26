@@ -25,6 +25,9 @@ export default function Lab2() {
   return (
     <Container>
       <h2>Lab 2 - Cascading Style Sheets</h2>
+      <a href="./lab2/tailwind">
+        <h3>Link to Tailwind</h3>
+      </a>
       <h3>Styling with the STYLE attribute</h3>
       <p>
         Style attribute allows configuring look and feel right on the element. Although it's very convenient
