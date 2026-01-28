@@ -1,17 +1,50 @@
+import ModulesControls from "./modulesControls";
+import { ListGroup, ListGroupItem} from "react-bootstrap";
+import { BsGripVertical } from "react-icons/bs";
+import ModuleControlButtons from "./ModuleControlButtons";
+import LessonControlButtons from "./LessonControlButtons";
+
 export default function Modules() {
     return (
       <div>
-        <div>
-            <button type="button">Collapse All</button>
-            <button type="button">View Progess</button>
-            <select id="wd-select-publish">
-                <option value="PUBLISH ONE">Publish One</option>
-                <option selected value="PUBLISH ALL">
-                    Publish All</option>
-            </select>
-            <button type="button">+ Module</button>
+        <ModulesControls /><br /><br /><br /><br />
+        <ListGroup className="rounded-0" id="wd-modules">
+          <ListGroupItem className="wd-module p-0 mb-5 fs-5 border-gray">
+            <div className="wd-title p-3 ps-2 bg-secondary"> 
+            <BsGripVertical className="me-2 fs-3" /> Week 1 <ModuleControlButtons />
+            </div>
+            <ListGroup className="wd-lessons rounded-0">
+              <ListGroupItem className="wd-lesson p-3 ps-1">
+                <BsGripVertical className="me-2 fs-3" /> LEARNING OBJECTIVES <LessonControlButtons />
+              </ListGroupItem>
+              <ListGroupItem className="wd-lesson p-3 ps-1">
+                <BsGripVertical className="me-2 fs-3" /> Introduction to the course <LessonControlButtons />
+              </ListGroupItem>
+              <ListGroupItem className="wd-lesson p-3 ps-1">
+                <BsGripVertical className="me-2 fs-3" /> Learn What is Web Development<LessonControlButtons />
+              </ListGroupItem>
+            </ListGroup>
+          </ListGroupItem>
+          <ListGroupItem className="wd-module p-0 mb-5 fs-5 border-gray">
+            <div className="wd-title p-3 ps-2 bg-secondary"> 
+            <BsGripVertical className="me-2 fs-3" /> Week 2 <ModuleControlButtons />
+            </div>
+            <ListGroup className="wd-lessons rounded-0">
+              <ListGroupItem className="wd-lesson p-3 ps-1">
+                <BsGripVertical className="me-2 fs-3" /> LEARNING OBJECTIVES <LessonControlButtons />
+              </ListGroupItem>
+              <ListGroupItem className="wd-lesson p-3 ps-1">
+                <BsGripVertical className="me-2 fs-3" /> Learn how to create user interfaces with HTML <LessonControlButtons />
+              </ListGroupItem>
+              <ListGroupItem className="wd-lesson p-3 ps-1">
+                <BsGripVertical className="me-2 fs-3" /> Get started on Assignment 1 Lab exercises<LessonControlButtons />
+              </ListGroupItem>
+            </ListGroup>
+          </ListGroupItem>
+        </ListGroup>
         </div>
-        <ul id="wd-modules">
+  );}
+  /**
           <li className="wd-module">
             <div className="wd-title">Lecture 1 - Building React User Interfaces</div>
             <ul className="wd-lessons">
@@ -129,7 +162,7 @@ export default function Modules() {
               </li>
             </ul>
           </li>
-        </ul>
+        </ListGroup>
       </div>
-  );}
+  );}**/
   
