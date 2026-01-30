@@ -40,4 +40,80 @@ body   {
     border-left: 3px solid green !important;
   }
   
-  
+
+/* Assignments controls */
+.wd-search-assignments-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 300px;
+  margin-left: 16px;
+}
+.wd-search-assignments-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+}
+.wd-search-assignments-input {
+  padding-left: 2.5rem;
+}
+.wd-assignments-percentage-circle {
+  border-radius: 15px;
+  border: 1px solid black;
+  display: inline-block;
+  padding: 3px; 
+ }
+ /* Assignments group styling */
+ .wd-assignment-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;       
+}
+.wd-assignment-left {
+  display: flex;
+  align-items: center;
+}
+.wd-assignment-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.wd-assignment-title {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+.wd-assignment-link {
+  text-decoration: none;   
+  color: inherit;          
+}
+.wd-assignments-subtext-red {
+  color: red;
+}
+
+/* Assignment Editor */
+.wd-assignments-editor-box {
+  border: 1px solid lightgray;  
+  border-radius: 4px;
+  padding: 16px;
+}
+
+/* Sidebar navigation active link styling*/
+.wd-nav-bg-inactive {
+  background-color: black;
+}
+.wd-nav-bg-inactive .wd-nav-link {
+  color: white;
+}
+.wd-nav-bg-inactive .wd-nav-icon {
+  color: white;
+}
+.wd-nav-bg-active {
+  background-color: white;
+}
+.wd-nav-bg-active .wd-nav-link {
+  color: #dc3545;
+}
+.wd-nav-bg-active .wd-nav-icon {
+  color: #dc3545;
+}
