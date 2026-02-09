@@ -1,5 +1,8 @@
 "use client";
 
+
+import { useParams } from "next/navigation";
+import * as db from "../../../../database";
 import FormSelect from 'react-bootstrap/FormSelect';
 import FormCheck from 'react-bootstrap/FormCheck';
 import FormRange from 'react-bootstrap/FormRange';
@@ -7,45 +10,39 @@ import InputGroup from 'react-bootstrap/InputGroup';;
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
 
 export default function AssignmentEditor() {
+  const { aid } = useParams();
+  const assignments = db.assignments
     return (
-      <div id="wd-assignments-editor">
+      assignments
+        .filter((assignment: any) => assignment._id === aid)
+        .map((assignment: any) => (
+      <div key={assignment._id} id="wd-assignments-editor">
         <Row className="mb-3">
           <Col>
             <Form.Label>Assignment Name</Form.Label>
-            <Form.Control as="textarea" rows={1} defaultValue="A1" className='assignments-editor-form'/>
+            <Form.Control as="textarea" rows={1} defaultValue={assignment.title} className='assignments-editor-form'/>
           </Col>
         </Row>
         <Row className="mb-3">
           <Col>
             <Form.Control as="textarea" rows={10} id='wd-assignment-instructions'
-              defaultValue={
-`The assignment is available online 
-
-Submit a link to the landing page of your Web application running on Netlify.
-
-The landing page should include the following:
-
--Your full name and section
--Links to each of the lab assignments
--Link to the Kanbas application
--Links to all relevant source code repositories
-
-The Kanbas application should include a link to navigate back to the landing page.`}/>
+              defaultValue={assignment.description}/>
           </Col>
         </Row>
         <Row className="mb-3" controlId="points">
                 <Form.Label className="text-end" column sm={3}> Points </Form.Label>
                 <Col sm={9}>
-                    <Form.Control type="email" defaultValue={100} />
+                    <Form.Control type="email" defaultValue={assignment.points} />
                 </Col>
         </Row>
         <Row className="mb-3" controlId="assignment-group">
           <Form.Label className="text-end" column sm={3}> Assignment Group </Form.Label>
           <Col sm={9}>
-            <FormSelect>
-                    <option value="ASSIGNMENTS" defaultChecked>ASSIGNMENTS</option>
+            <FormSelect defaultValue={assignment.group}>
+                    <option value="ASSIGNMENTS">ASSIGNMENTS</option>
                     <option value="TESTS">TESTS</option>
                     <option value="QUIZZES">QUIZZES</option>
                     <option value="PROJECTS">PROJECTS</option>
@@ -55,8 +52,8 @@ The Kanbas application should include a link to navigate back to the landing pag
         <Row className="mb-3" controlId="display-grade">
           <Form.Label className="text-end" column sm={3}> Display Grade as </Form.Label>
           <Col sm={9}>
-            <FormSelect>
-                    <option value="Percentage" defaultChecked>Percentage</option>
+            <FormSelect defaultChecked={assignment.display_grade}>
+                    <option value="Percentage">Percentage</option>
                     <option value="Points">Points</option>
                     <option value="Letter">Letter</option>
               </FormSelect>
@@ -66,8 +63,8 @@ The Kanbas application should include a link to navigate back to the landing pag
           <Form.Label className="text-end" column sm={3}> Submission Type </Form.Label>
           <Col sm={9}>
             <div className='wd-assignments-editor-box'>
-              <FormSelect className='mb-4'>
-                <option value="Online" defaultChecked>Online</option>
+              <FormSelect className='mb-4' defaultValue={assignment.submission_type}>
+                <option value="Online">Online</option>
                 <option value="In-Person">In-Person</option>
               </FormSelect>
               <div className="fw-bold mb-2">Online Entry Options</div>
@@ -89,24 +86,31 @@ The Kanbas application should include a link to navigate back to the landing pag
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Due</Form.Label>
-                <Form.Control type="datetime-local" defaultValue="2024-05-13T23:59"/>
+                <Form.Control type="datetime-local" defaultValue={assignment.dt_due}/>
               </Form.Group>
               <Row>
                 <Col>
                   <Form.Group className="mb-3">
                     <Form.Label>Available From</Form.Label>
-                    <Form.Control type="datetime-local" defaultValue="2024-05-06T23:59"/>
+                    <Form.Control type="datetime-local" defaultValue={assignment.dt_available}/>
                   </Form.Group>
                 </Col>
                 <Col>
                   <Form.Group className="mb-3">
                     <Form.Label>Until</Form.Label>
-                    <Form.Control type="datetime-local"/>
+                    <Form.Control type="datetime-local" defaultValue={assignment.dt_until}/>
                   </Form.Group>
                 </Col>
               </Row>
             </div>
           </Col>
         </Row>
+        <Button variant="danger" size="lg" className="me-1 float-end" id="wd-save-btn" href={`/courses/${assignment.course}/assignments/`}>
+          Save
+        </Button>
+        <Button variant="secondary" size="lg" className="me-1 float-end" id="wd-cancel-btn" href={`/courses/${assignment.course}/assignments/`}>
+          Cancel
+        </Button>
     </div>
+        ))
 );}
