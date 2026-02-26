@@ -1,47 +1,61 @@
-import Link from "next/link";
-import Form from 'react-bootstrap/Form';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+"use client";
+
+import { redirect } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { setCurrentUser } from "../reducer";
+import { RootState } from "../../store";
+import { Button, FormControl } from "react-bootstrap";
 
 export default function Profile() {
-  return (
-    <div id="wd-profile-screen">
-      <h3>Profile</h3>
-      <Row className="mb-2">
-        <Col>
-          <Form.Control as="textarea" rows={1} defaultValue="alice"/>
-        </Col>
-      </Row>
-      <Row className="mb-2">
-        <Col>
-          <Form.Control as="textarea" rows={1} defaultValue="123"/>
-        </Col>
-      </Row>
-      <Row className="mb-2">
-        <Col>
-          <Form.Control as="textarea" rows={1} defaultValue="Alice"/>
-        </Col>
-      </Row>
-      <Row className="mb-2">
-        <Col>
-          <Form.Control as="textarea" rows={1} defaultValue="Wonderland"/>
-        </Col>
-      </Row>
-      <Row className="mb-2">
-        <Col>
-          <Form.Control type="datetime-local"/>
-        </Col>
-      </Row>
-      <Row className="mb-2">
-        <Col>
-          <Form.Control type="email" defaultValue="alice@wonderland.com"/>
-        </Col>
-      </Row>
-      <Row className="mb-2">
-        <Col>
-          <Form.Control as="textarea" rows={1} defaultValue="User"/>
-        </Col>
-      </Row>
-      <Link id="wd-signout-btn" href="/account/signin" className="btn btn-danger w-100 mb-2"> Signout </Link>
-    </div>
+ const [profile, setProfile] = useState<any>({});
+ const dispatch = useDispatch();
+ const { currentUser } = useSelector((state: RootState) => state.accountReducer);
+ const fetchProfile = () => {
+   if (!currentUser) return redirect("/account/signin");
+   setProfile(currentUser);
+ };
+ const signout = () => {
+   dispatch(setCurrentUser(null));
+   redirect("/account/signin");
+ };
+ useEffect(() => {
+   fetchProfile();
+ }, []);
+ return (
+   <div className="wd-profile-screen">
+     <h3>Profile</h3>
+     {profile && (
+       <div>
+         <FormControl id="wd-username" className="mb-2"
+           defaultValue={profile.username}
+           onChange={(e) => setProfile({ ...profile, username: e.target.value }) } />
+         <FormControl id="wd-password" className="mb-2"
+           defaultValue={profile.password}
+           onChange={(e) => setProfile({ ...profile, password: e.target.value }) } />
+         <FormControl id="wd-firstname" className="mb-2"
+           defaultValue={profile.firstName}
+           onChange={(e) => setProfile({ ...profile, firstName: e.target.value }) } />
+         <FormControl id="wd-lastname" className="mb-2"
+           defaultValue={profile.lastName}
+           onChange={(e) => setProfile({ ...profile, lastName: e.target.value }) } />
+         <FormControl id="wd-dob" className="mb-2" type="date"
+           defaultValue={profile.dob}
+           onChange={(e) => setProfile({ ...profile, dob: e.target.value })} />
+         <FormControl id="wd-email" className="mb-2"
+           defaultValue={profile.email}
+           onChange={(e) => setProfile({ ...profile, email: e.target.value })} />
+         <select className="form-control mb-2" id="wd-role" 
+           onChange={(e) => setProfile({ ...profile, role: e.target.value })} >
+           <option value="USER">User</option>
+           <option value="ADMIN">Admin</option>
+           <option value="FACULTY">Faculty</option>{" "}
+           <option value="STUDENT">Student</option>
+         </select>
+         <Button onClick={signout} className="w-100 mb-2" id="wd-signout-btn">
+           Sign out
+         </Button>
+       </div>
+     )}
+   </div>
 );}
