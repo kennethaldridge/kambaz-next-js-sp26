@@ -18,17 +18,16 @@ export default function AssignmentsControls({ cid }: { cid: string }) {
           size="lg"
         />
       </div>
-      <Button
-        as={Link}
+
+      <Link
         href={`/courses/${cid}/assignments/new`}
-        variant="danger"
-        size="lg"
-        className="float-end ms-2"
+        className="btn btn-danger btn-lg float-end ms-2"
         id="wd-add-assignment-btn"
       >
         <FaPlus className="position-relative me-2" />
         Assignment
-      </Button>
+      </Link>
+
       <Button
         variant="secondary"
         size="lg"
