@@ -1,8 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 import * as db from "../database";
+import { v4 as uuidv4 } from "uuid";
 
 const initialState = {
-  enrollments: db.enrollments, // resets on refresh, persists during runtime
+  enrollments: db.enrollments,
 };
 
 const enrollmentsSlice = createSlice({
@@ -15,8 +16,12 @@ const enrollmentsSlice = createSlice({
       const already = state.enrollments.some(
         (e: any) => e.user === user && e.course === course
       );
+
       if (!already) {
-        state.enrollments = [...state.enrollments, { user, course }];
+        state.enrollments = [
+          ...state.enrollments,
+          { _id: uuidv4(), user, course },
+        ];
       }
     },
     unenrollFromCourse: (state, action) => {

@@ -13,7 +13,7 @@ import { enrollInCourse, unenrollFromCourse } from "../enrollments/reducer";
 export default function Dashboard() {
   const dispatch = useDispatch();
   const { courses } = useSelector((state: RootState) => state.coursesReducer);
-  const { currentUser } = useSelector((state: RootState) => state.accountReducer);
+  const { currentUser } = useSelector((state: RootState) => state.accountReducer) as any;
   const { enrollments } = useSelector((state: RootState) => state.enrollmentsReducer);
   const [showAllCourses, setShowAllCourses] = useState(false);
   const [course, setCourse] = useState<any>({
@@ -76,6 +76,7 @@ export default function Dashboard() {
             onChange={(e) => setCourse({ ...course, name: e.target.value })}
           />
           <FormControl
+            as="textarea"
             value={course.description}
             rows={3}
             onChange={(e) =>
