@@ -30,6 +30,10 @@ export default function TOC() {
          Kambaz </NavLink> </NavItem>
      <NavItem>
        <NavLink href="https://github.com/kennethaldridge/kambaz-next-js-sp26">My GitHub</NavLink></NavItem>
+       <NavItem>
+       <NavLink href="https://github.com/kennethaldridge/kambaz-node-server-app">Server GitHub</NavLink></NavItem>
+       <NavItem>
+       <NavLink href="https://kambaz-node-server-app-o246.onrender.com">Server Running</NavLink></NavItem>
    </Nav>
  );}
 
