@@ -53,7 +53,7 @@ export default function Dashboard() {
       if (currentUser) {
         dispatch(
           setEnrollments(
-            ids.map((id) => ({ user: currentUser._id, course: id }))
+            ids.map((id: string) => ({ user: currentUser._id, course: id }))
           )
         );
       }
