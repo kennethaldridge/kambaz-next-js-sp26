@@ -9,7 +9,7 @@ export const findAssignmentsForCourse = async (courseId: string) => {
   return data;
 };
 
-export const createAssignmentForCourse = async (
+export const createAssignment = async (
   courseId: string,
   assignment: any
 ) => {

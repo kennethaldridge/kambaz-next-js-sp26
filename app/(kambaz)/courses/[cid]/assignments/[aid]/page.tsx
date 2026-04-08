@@ -6,10 +6,13 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
+import { useDispatch } from "react-redux";
+import { addAssignment, updateAssignment as updateAssignmentInStore } from "../reducer";
 import * as client from "../client";
 
 export default function AssignmentEditor() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const { cid, aid } = useParams<{ cid: string; aid: string }>();
   const isNew = aid === "new";
 
@@ -34,9 +37,11 @@ export default function AssignmentEditor() {
 
   const save = async () => {
     if (isNew) {
-      await client.createAssignmentForCourse(cid, assignment);
+      const newAssignment = await client.createAssignment(cid, assignment);
+      dispatch(addAssignment(newAssignment));
     } else {
-      await client.updateAssignment(assignment);
+      const updated = await client.updateAssignment(assignment);
+      dispatch(updateAssignmentInStore(updated));
     }
     router.push(`/courses/${cid}/assignments`);
   };

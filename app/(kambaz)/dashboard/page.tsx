@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { RootState } from "../store";
 import { setCourses } from "../courses/reducer";
+import { setEnrollments } from "../enrollments/reducer";
 import * as client from "../courses/client";
 
 export default function Dashboard() {
@@ -28,7 +29,7 @@ export default function Dashboard() {
   ) as any;
 
   const [showAllCourses, setShowAllCourses] = useState(false);
-  const [enrollments, setEnrollments] = useState<any[]>([]);
+  const [enrolledCourseIds, setEnrolledCourseIds] = useState<string[]>([]);
   const [course, setCourse] = useState<any>({
     _id: "0",
     name: "New Course",
@@ -41,28 +42,27 @@ export default function Dashboard() {
   const canManageCourses =
     currentUser?.role === "FACULTY" || currentUser?.role === "ADMIN";
 
-  const loadEnrollments = async () => {
-    if (!currentUser) {
-      setEnrollments([]);
-      return;
-    }
-    try {
-      const data = await client.findMyEnrollments();
-      setEnrollments(data);
-    } catch (error) {
-      console.error(error);
-      setEnrollments([]);
-    }
-  };
-
   const loadCourses = async () => {
     try {
+      // Always fetch my enrolled courses to determine enrollment status
+      const myCourses = await client.findMyCourses();
+      const ids = myCourses.map((c: any) => c._id as string);
+      setEnrolledCourseIds(ids);
+
+      // Sync Redux enrollments so the course layout gate works correctly
+      if (currentUser) {
+        dispatch(
+          setEnrollments(
+            ids.map((id) => ({ user: currentUser._id, course: id }))
+          )
+        );
+      }
+
       if (showAllCourses) {
-        const data = await client.fetchAllCourses();
-        dispatch(setCourses(data));
+        const allCourses = await client.fetchAllCourses();
+        dispatch(setCourses(allCourses));
       } else {
-        const data = await client.findMyCourses();
-        dispatch(setCourses(data));
+        dispatch(setCourses(myCourses));
       }
     } catch (error) {
       console.error(error);
@@ -71,12 +71,10 @@ export default function Dashboard() {
   };
 
   const refreshDashboard = async () => {
-    await loadEnrollments();
     await loadCourses();
   };
 
-  const isEnrolled = (courseId: string) =>
-    enrollments.some((enrollment: any) => enrollment.course === courseId);
+  const isEnrolled = (courseId: string) => enrolledCourseIds.includes(courseId);
 
   const resetForm = () => {
     setCourse({
@@ -92,15 +90,10 @@ export default function Dashboard() {
   const onAddNewCourse = async () => {
     try {
       const newCourse = await client.createCourse(course);
-
       dispatch(setCourses([...courses, newCourse]));
       if (currentUser) {
-        setEnrollments([
-          ...enrollments,
-          { user: currentUser._id, course: newCourse._id },
-        ]);
+        setEnrolledCourseIds([...enrolledCourseIds, newCourse._id]);
       }
-
       resetForm();
       await refreshDashboard();
     } catch (error) {
@@ -111,12 +104,8 @@ export default function Dashboard() {
   const onDeleteCourse = async (courseId: string) => {
     try {
       await client.deleteCourse(courseId);
-
       dispatch(setCourses(courses.filter((c: any) => c._id !== courseId)));
-      setEnrollments(
-        enrollments.filter((e: any) => e.course !== courseId)
-      );
-
+      setEnrolledCourseIds(enrolledCourseIds.filter((id) => id !== courseId));
       await refreshDashboard();
     } catch (error) {
       console.error(error);
@@ -126,15 +115,11 @@ export default function Dashboard() {
   const onUpdateCourse = async () => {
     try {
       await client.updateCourse(course);
-
       dispatch(
         setCourses(
-          courses.map((c: any) =>
-            c._id === course._id ? course : c
-          )
+          courses.map((c: any) => (c._id === course._id ? course : c))
         )
       );
-
       await refreshDashboard();
     } catch (error) {
       console.error(error);
@@ -143,15 +128,7 @@ export default function Dashboard() {
 
   const onEnroll = async (courseId: string) => {
     try {
-      await client.enrollUserInCourse(courseId);
-
-      if (currentUser) {
-        setEnrollments([
-          ...enrollments,
-          { user: currentUser._id, course: courseId },
-        ]);
-      }
-
+      await client.enrollIntoCourse("current", courseId);
       await refreshDashboard();
     } catch (error) {
       console.error(error);
@@ -160,16 +137,10 @@ export default function Dashboard() {
 
   const onUnenroll = async (courseId: string) => {
     try {
-      await client.unenrollUserFromCourse(courseId);
-
-      setEnrollments(
-        enrollments.filter((e: any) => e.course !== courseId)
-      );
-
+      await client.unenrollFromCourse("current", courseId);
       if (!showAllCourses) {
         dispatch(setCourses(courses.filter((c: any) => c._id !== courseId)));
       }
-
       await refreshDashboard();
     } catch (error) {
       console.error(error);
@@ -253,14 +224,16 @@ export default function Dashboard() {
                 className="wd-dashboard-course"
                 style={{ width: "300px" }}
               >
-                <Card>
+                <Card className={showAllCourses && enrolled ? "border-danger" : ""}>
                   <CardImg
                     src={c.image || "/images/reactjs.jpg"}
                     variant="top"
                     width="100%"
                     height={160}
                   />
-                  <CardBody className="card-body">
+                  <CardBody
+                    className={`card-body${showAllCourses && enrolled ? " bg-danger bg-opacity-10" : ""}`}
+                  >
                     <CardTitle className="wd-dashboard-course-title text-nowrap overflow-hidden">
                       {c.name}
                     </CardTitle>
@@ -274,7 +247,7 @@ export default function Dashboard() {
 
                     {enrolled ? (
                       <Link
-                        href={`/courses/${c._id}`}
+                        href={`/courses/${c._id}/home`}
                         className="btn btn-primary"
                       >
                         Go
