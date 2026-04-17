@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Button } from "react-bootstrap";
 import { RootState } from "../../../../store";
+import { updateQuiz as updateQuizInStore } from "../reducer";
 import * as client from "../client";
 import * as attemptsClient from "../attemptsClient";
 import { formatDate } from "../utils";
@@ -12,6 +13,7 @@ import { formatDate } from "../utils";
 export default function QuizDetails() {
   const { cid, qid } = useParams<{ cid: string; qid: string }>();
   const router = useRouter();
+  const dispatch = useDispatch();
   const { currentUser } = useSelector(
     (state: RootState) => state.accountReducer
   ) as any;
@@ -41,6 +43,7 @@ export default function QuizDetails() {
   const handleTogglePublish = async () => {
     const updated = { ...quiz, published: !quiz.published };
     await client.updateQuiz(updated);
+    dispatch(updateQuizInStore(updated));
     setQuiz(updated);
   };
 
@@ -90,7 +93,7 @@ export default function QuizDetails() {
               ✏️ Edit
             </Button>
             <Button
-              variant={quiz.published ? "outline-secondary" : "outline-success"}
+              variant={quiz.published ? "warning" : "success"}
               onClick={handleTogglePublish}
             >
               {quiz.published ? "Unpublish" : "Publish"}

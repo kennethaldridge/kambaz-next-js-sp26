@@ -150,6 +150,22 @@ export default function QuizPreview() {
 
       <h3>{quiz.title}</h3>
 
+      {/* Question jump navigation */}
+      {quiz.oneQuestionAtATime && questions.length > 0 && (
+        <div className="d-flex flex-wrap gap-1 mb-3">
+          {questions.map((_: any, idx: number) => (
+            <Button
+              key={idx}
+              size="sm"
+              variant={idx === currentIndex ? "danger" : "outline-secondary"}
+              onClick={() => setCurrentIndex(idx)}
+            >
+              {idx + 1}
+            </Button>
+          ))}
+        </div>
+      )}
+
       {visibleQuestions.map((q, idx) =>
         renderQuestion(q, quiz.oneQuestionAtATime ? currentIndex : idx)
       )}

@@ -47,18 +47,20 @@ export default function QuestionsEditor() {
     load();
   }, [qid]);
 
-  const recalcQuiz = async (updatedQuestions: any[]) => {
-    const totalPoints = updatedQuestions.reduce(
-      (sum, q) => sum + (q.points || 0),
+  const recalcQuiz = async () => {
+    const fresh = await questionsClient.findQuestionsForQuiz(qid);
+    const totalPoints = fresh.reduce(
+      (sum: number, q: any) => sum + (q.points || 0),
       0
     );
     const updated = {
       ...quiz,
       points: totalPoints,
-      numberOfQuestions: updatedQuestions.length,
+      numberOfQuestions: fresh.length,
     };
     await quizClient.updateQuiz(updated);
     dispatch(updateQuizInStore(updated));
+    dispatch(setQuestions(fresh));
     setQuiz(updated);
   };
 
@@ -67,8 +69,7 @@ export default function QuestionsEditor() {
       order: questions.length,
     });
     dispatch(addQuestion(newQ));
-    const updatedQuestions = [...questions, newQ];
-    await recalcQuiz(updatedQuestions);
+    await recalcQuiz();
     setEditingId(newQ._id);
     setDraft({ ...newQ });
   };
@@ -77,17 +78,13 @@ export default function QuestionsEditor() {
     if (!window.confirm("Delete this question?")) return;
     await questionsClient.deleteQuestion(questionId);
     dispatch(deleteQuestionAction(questionId));
-    const updatedQuestions = questions.filter((q) => q._id !== questionId);
-    await recalcQuiz(updatedQuestions);
+    await recalcQuiz();
   };
 
   const handleUpdate = async () => {
     await questionsClient.updateQuestion(draft);
     dispatch(updateQuestionInStore(draft));
-    const updatedQuestions = questions.map((q) =>
-      q._id === draft._id ? draft : q
-    );
-    await recalcQuiz(updatedQuestions);
+    await recalcQuiz();
     setEditingId(null);
     setDraft(null);
   };

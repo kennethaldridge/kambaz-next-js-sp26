@@ -27,6 +27,7 @@ export default function labs() {
      </ul>
      <div>
       <h2>Kenneth Aldridge</h2>
+      <h2>Final Project Members: Kenneth Aldridge and Aryn Chadha</h2>
      </div>
    </div>
 );}
