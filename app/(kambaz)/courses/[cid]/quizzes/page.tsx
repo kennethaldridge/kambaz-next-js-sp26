@@ -12,31 +12,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../store";
 import { setQuizzes, addQuiz, deleteQuiz, updateQuiz } from "./reducer";
 import * as client from "./client";
-
-function formatDate(isoString: string | undefined): string {
-  if (!isoString) return "No date";
-  const d = new Date(isoString);
-  if (isNaN(d.getTime())) return "No date";
-  const month = d.toLocaleString("en-US", { month: "short" });
-  const day = d.getDate();
-  const hours = d.getHours();
-  const minutes = d.getMinutes();
-  const ampm = hours >= 12 ? "pm" : "am";
-  const hour12 = hours % 12 === 0 ? 12 : hours % 12;
-  const minuteStr = minutes === 0 ? "" : `:${String(minutes).padStart(2, "0")}`;
-  return `${month} ${day} at ${hour12}${minuteStr}${ampm}`;
-}
-
-function getAvailabilityStatus(quiz: any): string {
-  const now = new Date();
-  const until = quiz.untilDate ? new Date(quiz.untilDate) : null;
-  const available = quiz.availableDate ? new Date(quiz.availableDate) : null;
-  if (until && now > until) return "Closed";
-  if (available && until && now >= available && now <= until) return "Available";
-  if (available && now < available)
-    return `Not available until ${formatDate(quiz.availableDate)}`;
-  return "Available";
-}
+import * as attemptsClient from "./attemptsClient";
+import { formatDate, getAvailabilityStatus } from "./utils";
 
 const ASSIGNMENT_GROUPS = ["Quizzes", "Exams", "Assignments", "Project"];
 
@@ -51,6 +28,7 @@ export default function QuizList() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const [latestAttempts, setLatestAttempts] = useState<Record<string, any>>({});
 
   const isFaculty =
     currentUser?.role === "FACULTY" || currentUser?.role === "ADMIN";
@@ -59,6 +37,18 @@ export default function QuizList() {
     const fetch = async () => {
       const data = await client.findQuizzesForCourse(cid);
       dispatch(setQuizzes(data));
+      if (!isFaculty) {
+        const attempts: Record<string, any> = {};
+        await Promise.all(
+          data.map(async (quiz: any) => {
+            try {
+              const latest = await attemptsClient.getLatestAttempt(quiz._id);
+              if (latest) attempts[quiz._id] = latest;
+            } catch (_) {}
+          })
+        );
+        setLatestAttempts(attempts);
+      }
     };
     fetch();
   }, [cid]);
@@ -202,7 +192,15 @@ export default function QuizList() {
                         )}
                         <span> | {quiz.points} pts</span>
                         <span> | {quiz.numberOfQuestions} Questions</span>
-                        {!isFaculty && <span> | Score: -</span>}
+                        {!isFaculty && (
+                          <span>
+                            {" "}
+                            |{" "}
+                            {latestAttempts[quiz._id]
+                              ? `Score: ${latestAttempts[quiz._id].score} / ${quiz.points}`
+                              : "Score: -"}
+                          </span>
+                        )}
                       </div>
                     </div>
 
